@@ -18,6 +18,8 @@ impl ToTypeDef for NapiType {
       kind: "type".to_owned(),
       name: self.js_name.to_owned(),
       original_name: Some(self.name.to_string()),
+      // TODO: pass generics here
+      generics: Vec::new(),
       def: ty_to_ts_type(&self.value, false, false, false).0,
       js_mod: self.js_mod.to_owned(),
       js_doc: JSDoc::new(&self.comments),

@@ -302,6 +302,12 @@ import {
   withAbortSignalHandle,
   createI32ArrayFromExternal,
   optionalCallbackTypes,
+  MyResult,
+  StringResult,
+  MyOptResult,
+  validateOptResult,
+  validateResult,
+  validateStringResult,
 } from '../index.cjs'
 // import other stuff in `#[napi(module_exports)]`
 import nativeAddon from '../index.cjs'
@@ -493,6 +499,29 @@ test('structured enum', (t) => {
   t.deepEqual(tuple2, validateStructuredEnumLowercase(tuple2))
   t.throws(() => validateStructuredEnumLowercase({ type: 'unknown' } as any))
   t.throws(() => validateStructuredEnumLowercase({ type: 'greeting' } as any))
+
+  const err: StringResult<number> = {
+    type: 'Err',
+    value: 'test',
+  }
+  const success: MyResult<number, string> = {
+    type: 'Ok',
+    value: 42,
+  }
+  t.deepEqual(validateResult(err), err)
+  t.deepEqual(validateResult(success), success)
+  t.deepEqual(validateStringResult(err), err)
+  t.deepEqual(validateStringResult(success), success)
+
+  const optSuccess: MyOptResult<number, string> = {
+    type: 'Some',
+    result: success,
+  }
+  const noneResult: MyOptResult<number, string> = {
+    type: 'None',
+  }
+  t.deepEqual(validateOptResult(optSuccess), optSuccess)
+  t.deepEqual(validateOptResult(noneResult), noneResult)
 })
 
 test('function call', async (t) => {

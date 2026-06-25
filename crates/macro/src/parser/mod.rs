@@ -1403,6 +1403,7 @@ impl ConvertToAST for syn::ItemStruct {
       item: NapiItem::Struct(NapiStruct {
         js_name: final_js_name_for_struct,
         name: rust_struct_ident.clone(),
+        generics: self.generics.clone(),
         kind: struct_kind,
         js_mod: namespace,
         use_nullable,
@@ -1595,6 +1596,7 @@ impl ConvertToAST for syn::ItemEnum {
       return Diagnostic::from_vec(errors).map(|()| Napi {
         item: NapiItem::Struct(NapiStruct {
           name: rust_struct_ident.clone(),
+          generics: self.generics.clone(),
           js_name,
           comments: extract_doc_comments(&self.attrs),
           js_mod: opts.namespace().map(|(m, _)| m.to_owned()),

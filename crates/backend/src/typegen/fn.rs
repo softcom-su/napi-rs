@@ -110,6 +110,8 @@ impl ToTypeDef for NapiFn {
       kind: "fn".to_owned(),
       name: self.js_name.clone(),
       original_name: None,
+      // TODO: forward ts_generic_types instead of placing them in def?
+      generics: Vec::new(),
       def,
       js_mod: self.js_mod.to_owned(),
       js_doc: JSDoc::new(&self.comments),

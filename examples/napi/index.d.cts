@@ -943,8 +943,16 @@ export declare function mutateOptionalExternal(external: ExternalObject<number> 
 
 export declare function mutateTypedArray(input: Float32Array): void
 
+export type MyOptResult<T, E> =
+  | { type: 'Some', result: MyResult<T, E> }
+  | { type: 'None' }
+
 export type MyPromise =
   string | Promise<string>
+
+export type MyResult<T, E> =
+  | { type: 'Ok', value: T }
+  | { type: 'Err', value: E }
 
 export type MyVec =
   Array<number | string>
@@ -1178,6 +1186,9 @@ export declare const enum StringEnum {
   VariantThree = 'variantthree'
 }
 
+export type StringResult<T> =
+  MyResult<T, string>
+
 export type StructuredKind =
   | { type2: 'Hello' }
   | { type2: 'Greeting', name: string }
@@ -1329,11 +1340,17 @@ export declare function validateNumber(i: number): number
 
 export declare function validateOptional(input1?: string | undefined | null, input2?: boolean | undefined | null): boolean
 
+export declare function validateOptResult(result: MyOptResult<number, string>): MyOptResult<number, string>
+
 export declare function validatePromise(p: Promise<number>): Promise<number>
+
+export declare function validateResult(result: MyResult<number, string>): MyResult<number, string>
 
 export declare function validateString(s: string): string
 
 export declare function validateStringEnum(input: StatusInValidate): string
+
+export declare function validateStringResult(result: StringResult<number>): StringResult<number>
 
 export declare function validateStructuredEnum(kind: StructuredKind): StructuredKind
 

@@ -89,3 +89,33 @@ pub fn validate_structured_enum_lowercase(
 ) -> StructuredKindLowercase {
   kind
 }
+
+#[napi]
+pub enum MyResult<T, E> {
+  Ok(#[napi(js_name = "value")] T),
+  Err(#[napi(js_name = "value")] E),
+}
+
+#[napi]
+pub fn validate_result(result: MyResult<u32, String>) -> MyResult<u32, String> {
+  result
+}
+
+#[napi]
+pub type StringResult<T> = MyResult<T, String>;
+
+#[napi]
+pub fn validate_string_result(result: StringResult<u32>) -> StringResult<u32> {
+  result
+}
+
+#[napi]
+pub enum MyOptResult<T, E> {
+  Some(#[napi(js_name = "result")] MyResult<T, E>),
+  None,
+}
+
+#[napi]
+pub fn validate_opt_result(result: MyOptResult<u32, String>) -> MyOptResult<u32, String> {
+  result
+}

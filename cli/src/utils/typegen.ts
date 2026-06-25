@@ -23,6 +23,7 @@ interface TypeDefLine {
   kind: TypeDefKind
   name: string
   original_name?: string
+  generics?: string[]
   def: string
   extends?: string
   js_doc?: string
@@ -52,6 +53,12 @@ function prettyPrint(
   ident: number,
   ambient = false,
 ): string {
+  // TODO: support generics in more places
+  let generics = ''
+  if (line.generics !== undefined && line.generics.length > 0) {
+    generics = `<${line.generics.join(', ')}>`
+  }
+
   let s = line.js_doc ?? ''
   switch (line.kind) {
     case TypeDefKind.Interface:
@@ -59,7 +66,7 @@ function prettyPrint(
       break
 
     case TypeDefKind.Type:
-      s += `export type ${line.name} = \n${line.def}`
+      s += `export type ${line.name}${generics} = \n${line.def}`
       break
 
     case TypeDefKind.Enum: {

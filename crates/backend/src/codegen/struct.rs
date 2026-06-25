@@ -994,6 +994,7 @@ impl NapiStruct {
     let name_str = self.name.to_string();
     let discriminant = structured_enum.discriminant.as_str();
     let discriminant_null_terminated = format!("{}\0", discriminant);
+    let generics = &self.generics;
 
     let mut variant_arm_setters = vec![];
     let mut variant_arm_getters = vec![];
@@ -1232,9 +1233,14 @@ impl NapiStruct {
     }
 
     let to_napi_value = if structured_enum.object_to_js {
+      let bounds = generics
+        .type_params()
+        .map(|type_param| quote! {#type_param : napi::bindgen_prelude::ToNapiValue, })
+        .collect::<TokenStream>();
+
       quote! {
-        impl napi::bindgen_prelude::ToNapiValue for #name {
-          unsafe fn to_napi_value(env: napi::bindgen_prelude::sys::napi_env, val: #name) -> napi::bindgen_prelude::Result<napi::bindgen_prelude::sys::napi_value> {
+        impl #generics napi::bindgen_prelude::ToNapiValue for #name #generics where #bounds {
+          unsafe fn to_napi_value(env: napi::bindgen_prelude::sys::napi_env, val: #name #generics) -> napi::bindgen_prelude::Result<napi::bindgen_prelude::sys::napi_value> {
             match val {
               #(#variant_arm_setters)*
             }
@@ -1246,8 +1252,13 @@ impl NapiStruct {
     };
 
     let from_napi_value = if structured_enum.object_from_js {
+      let bounds = generics
+        .type_params()
+        .map(|type_param| quote! {#type_param : napi::bindgen_prelude::FromNapiValue, })
+        .collect::<TokenStream>();
+
       quote! {
-        impl napi::bindgen_prelude::FromNapiValue for #name {
+        impl #generics napi::bindgen_prelude::FromNapiValue for #name #generics where #bounds {
           unsafe fn from_napi_value(
             env: napi::bindgen_prelude::sys::napi_env,
             napi_val: napi::bindgen_prelude::sys::napi_value
@@ -1271,14 +1282,14 @@ impl NapiStruct {
           }
         }
 
-        impl napi::bindgen_prelude::ValidateNapiValue for #name {}
+        impl #generics napi::bindgen_prelude::ValidateNapiValue for #name #generics {}
       }
     } else {
       quote! {}
     };
 
     quote! {
-      impl napi::bindgen_prelude::TypeName for #name {
+      impl #generics napi::bindgen_prelude::TypeName for #name #generics {
         fn type_name() -> &'static str {
           #name_str
         }

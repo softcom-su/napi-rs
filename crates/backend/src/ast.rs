@@ -1,6 +1,6 @@
 use convert_case::Case;
 use proc_macro2::{Ident, Literal};
-use syn::{Attribute, Expr, Type};
+use syn::{Attribute, Expr, Generics, Type};
 
 #[derive(Debug, Clone)]
 pub struct NapiFn {
@@ -83,6 +83,8 @@ pub enum FnSelf {
 #[derive(Debug, Clone)]
 pub struct NapiStruct {
   pub name: Ident,
+  /// Lifetime, type and const parameters of this struct definition
+  pub generics: Generics,
   pub js_name: String,
   pub comments: Vec<String>,
   pub js_mod: Option<String>,

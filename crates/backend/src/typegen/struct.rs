@@ -48,6 +48,11 @@ impl ToTypeDef for NapiStruct {
       }),
       name: self.js_name.to_owned(),
       original_name: Some(self.name.to_string()),
+      generics: self
+        .generics
+        .type_params()
+        .map(|type_param| type_param.ident.to_string())
+        .collect(),
       def: self.gen_ts_class(),
       js_mod: self.js_mod.to_owned(),
       js_doc,
@@ -88,6 +93,7 @@ impl ToTypeDef for NapiImpl {
         kind: "extends".to_owned(),
         name: self.js_name.to_owned(),
         original_name: None,
+        generics: Vec::new(),
         def: format!(
           "Iterator<{}, {}, {}>",
           ty_to_ts_type(output_type, false, true, false).0,
@@ -121,6 +127,7 @@ impl ToTypeDef for NapiImpl {
         kind: "impl".to_owned(),
         name: self.js_name.to_owned(),
         original_name: None,
+        generics: Vec::new(),
         def: format!(
           "[Symbol.asyncIterator](): AsyncGenerator<{}, {}, {}>",
           yield_type, return_type, next_type,
@@ -133,6 +140,7 @@ impl ToTypeDef for NapiImpl {
         kind: "impl".to_owned(),
         name: self.js_name.to_owned(),
         original_name: None,
+        generics: Vec::new(),
         def: self
           .items
           .iter()
