@@ -18,6 +18,8 @@ pub struct TypeDef {
   pub kind: String,
   pub name: String,
   pub original_name: Option<String>,
+  /// Type parameters of this type definition
+  pub generics: Vec<String>,
   pub def: String,
   pub js_mod: Option<String>,
   pub js_doc: JSDoc,
@@ -239,9 +241,15 @@ impl Display for TypeDef {
 
     write!(
       f,
-      r#"{{"kind": "{}", "name": "{}", "js_doc": "{}", "def": "{}"{}{}}}"#,
+      r#"{{"kind": "{}", "name": "{}", "generics": [{}], "js_doc": "{}", "def": "{}"{}{}}}"#,
       self.kind,
       self.name,
+      self
+        .generics
+        .iter()
+        .map(|ty| format!(r#""{}""#, escape_json(ty)))
+        .collect::<Vec<_>>()
+        .join(","),
       escape_json(&self.js_doc.to_string()),
       escape_json(&self.def),
       original_name,
@@ -645,7 +653,7 @@ fn handle_generic_type(rust_ty: &str, args: &[(String, bool)]) -> Option<(String
     let mut ty = rust_ty;
     if let Some((alias, _)) = type_alias {
       // If alias contains '<', take the base type as &str, then convert to String for formatting
-      ty = alias.split_once('<').map(|(t, _)| t).unwrap();
+      ty = alias.split_once('<').map(|(t, _)| t).unwrap_or(&alias);
       return Some((format!("{}<{}>", ty, arg_str), false));
     }
     Some((format!("{}<{}>", ty, arg_str), false))
@@ -781,7 +789,7 @@ fn handle_type_path(
     } else if let Some(t) = crate::typegen::r#struct::CLASS_STRUCTS
       .with(|c| c.borrow_mut().get(rust_ty.as_str()).cloned())
     {
-      Some((t, false))
+      handle_generic_type(&t, &args)
     } else if rust_ty == TSFN_RUST_TY {
       handle_threadsafe_function_type(&args)
     } else {

@@ -200,3 +200,4 @@
 {"kind": "impl", "name": "AsyncBuffer", "js_doc": "", "def": ""}
 {"kind": "fn", "name": "asyncReduceBuffer", "js_doc": "", "def": "function asyncReduceBuffer(buf: Buffer): Promise<number>"}
 {"kind": "fn", "name": "runScript", "js_doc": "", "def": "function runScript(script: string): unknown"}
+{"kind": "type", "name": "MyResult", "js_doc": "", "generics": ["T", "E"], "def": "| { type: 'Ok', value: T }\n| { type: 'Err', value: E }"}

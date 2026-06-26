@@ -17,6 +17,7 @@ impl ToTypeDef for NapiEnum {
       },
       name: self.js_name.to_owned(),
       original_name: Some(self.name.to_string()),
+      generics: Vec::new(),
       def: self.gen_ts_variants(),
       js_doc: JSDoc::new(&self.comments),
       js_mod: self.js_mod.to_owned(),
